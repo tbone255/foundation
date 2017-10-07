@@ -52,6 +52,14 @@ class ViewOptions(PartialViewOptions):
     save_as_continue = True
     save_on_top = False
 
+    # action options -- list and object?
+    actions = []
+    action_form = helpers.ActionForm
+    actions_on_top = True
+    actions_on_bottom = False
+    actions_selection_counter = True
+    checks_class = ModelAdminChecks
+
 
 class ControllerOptions(ViewOptions):
     """ Configurable options for registered controllers. """

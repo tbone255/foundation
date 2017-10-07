@@ -281,6 +281,34 @@ class Backend(six.with_metaclass(MediaDefiningClass, Router)):
             'available_apps': self.get_available_apps(request),
         }
 
+    def add_action(self, action, name=None):
+        """
+        Register an action to be available globally.
+        """
+        name = name or action.__name__
+        self._actions[name] = action
+        self._global_actions[name] = action
+
+    def disable_action(self, name):
+        """
+        Disable a globally-registered action. Raises KeyError for invalid names.
+        """
+        del self._actions[name]
+
+    def get_action(self, name):
+        """
+        Explicitly get a registered global action whether it's enabled or
+        not. Raises KeyError for invalid names.
+        """
+        return self._global_actions[name]
+
+    @property
+    def actions(self):
+        """
+        Get all the enabled actions as an iterable of (name, func).
+        """
+        return six.iteritems(self._actions)
+
     @property
     def empty_value_display(self):
         return self._empty_value_display
