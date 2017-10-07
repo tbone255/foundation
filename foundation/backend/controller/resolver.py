@@ -107,4 +107,40 @@ class ModelResolver(object):
         if url_name:
             url_kwargs = self.get_url_kwargs(mode, **kwargs)
 
+        """
+        model_instance = None
+        if obj is None:
+            model_class = self.controller.model
+        else:
+            if issubclass(obj.__class__, models.Model):
+                if isinstance(obj, models.Model):
+                    model_class = obj.__class__
+                    model_instance = obj
+                else:
+                    model_class = obj
+                if self.controller.model != model_class:
+                    
+                    
+            else:
+                # if obj provided and not a model class or instance, bail
+                raise ValueError('obj of type {} is not supported'.format(
+                    type(obj)))
+
+        # next determine if this is the controller of interest
+        controller = self.controller
+        url_model_class = 
+        if not controller or controller.model != 
+
+        # custom override for VIEW ONLY to handle special case of list/add
+        url = None
+
+        if not subcontroller and self.accessed_by_parent and mode in ('list', 'add'):
+            # attempt to get mode as a parent subcontroller url
+            url = self.parent.get_url(mode, self.controller, **kwargs)
+
+        # normal lookup
+        if not url:
+            url = super(ControllerViewMixin, self).get_url(mode, subcontroller, **kwargs)
+        """
+
         return resolve_url(url_name, **url_kwargs) if url_name else None

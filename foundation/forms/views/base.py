@@ -118,10 +118,27 @@ class ControllerTemplateMixin(BreadcrumbMixin, views.ControllerViewMixin, views.
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
+
+        opts = self.model._meta
+        app_label = opts.app_label
+        model_name = opts.model_name
+
         kwargs.update({
             'view_controller': self,
             'is_popup_var': IS_POPUP_VAR,
+            'mode': self.mode,
+            'opts': opts,
+            'app_label': app_label,
+            'model_name': model_name,
+            'title': _(self.mode_title),
+            'to_field_var': TO_FIELD_VAR,
+            # 'to_field': to_field,
+            # errors=helpers.AdminErrorList(form, formsets),
+            # preserved_filters=self.get_preserved_filters(request),
+            'is_popup': (IS_POPUP_VAR in self.request.POST or
+                         IS_POPUP_VAR in self.request.GET)
         })
+
         return super(ControllerTemplateMixin, self).get_context_data(**kwargs)
 
     @property
@@ -136,3 +153,32 @@ class ControllerTemplateMixin(BreadcrumbMixin, views.ControllerViewMixin, views.
                                 else self.object_style],
             self.template_name
         )
+
+    """
+    @property
+    def media(self):
+        '''
+        CONTROLLER
+        extra = '' if settings.DEBUG else '.min'
+        js = [
+            'core.js',
+            'vendor/jquery/jquery%s.js' % extra,
+            'jquery.init.js',
+            'admin/RelatedObjectLookups.js',
+            'actions%s.js' % extra,
+            'urlify.js',
+            'prepopulate%s.js' % extra,
+            'vendor/xregexp/xregexp%s.js' % extra,
+        ]
+        INLINE
+        extra = '' if settings.DEBUG else '.min'
+        js = ['vendor/jquery/jquery%s.js' % extra, 'jquery.init.js',
+              'inlines%s.js' % extra]
+        if self.filter_vertical or self.filter_horizontal:
+            js.extend(['SelectBox.js', 'SelectFilter2.js'])
+        if self.classes and 'collapse' in self.classes:
+            js.append('collapse%s.js' % extra)
+        return forms.Media(js=['admin/js/%s' % url for url in js])
+        '''
+        return forms.Media()
+    """

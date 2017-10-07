@@ -107,6 +107,10 @@ class ProcessFormView(BaseModelFormMixin, ObjectMixin, ControllerTemplateMixin,
     def get_context_data(self, **kwargs):
         # from render_change_form
         request = self.request
+        opts = self.model._meta
+        app_label = opts.app_label
+        # preserved_filters = self.get_preserved_filters(request)
+        # form_url = add_preserved_filters({'preserved_filters': preserved_filters, 'opts': opts}, form_url)
 
         # from changeform_view
         object_id = None
@@ -121,7 +125,13 @@ class ProcessFormView(BaseModelFormMixin, ObjectMixin, ControllerTemplateMixin,
             'save_as': self.save_as,
             'save_on_top': self.save_on_top,
             preserved_filters=self.get_preserved_filters(request),
-
+            # 'has_file_field': True,  # FIXME - this should check if form or formsets have a FileField,
+            # 'form_url': form_url,
+            # 'content_type_id': get_content_type_for_model(self.model).pk,
+            # is_popup=(IS_POPUP_VAR in request.POST or
+            #           IS_POPUP_VAR in request.GET),
+            # 'to_field': to_field,
+            # errors=helpers.AdminErrorList(form, formsets),
         })
 
         return super(ProcessFormView, self).get_context_data(**kwargs)

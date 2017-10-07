@@ -11,6 +11,11 @@ __all__ = 'ModelAccessor',
 
 class ModelAccessor(object):
 
+    # TODO: eventually we could consider putting the FK name on the URL path
+    # and thus supporting multiple FK names for *query* purposes and then let
+    # the single-object (in-focus) object discern which FK it is using
+    # FOR NOW, let's maintain a single FK since that is more typical
+
     model = None
 
     def get_associated_queryset(self):
@@ -43,6 +48,12 @@ class ModelAccessor(object):
                 ordering = (ordering,)
             queryset = queryset.order_by(*ordering)
 
+        """
+        TODO: look into the intent of this
+        if not qs.query.select_related:
+            qs = self.apply_select_related(qs)
+
+        """
         return queryset
 
     @cached_property

@@ -165,6 +165,15 @@ class ControllerViewMixin(BaseViewController):
             child = inline_controller_class(self)
             name = child.fk.rel.get_accessor_name()
             named_children[name] = child
+            """
+            if request:
+                if not (inline.has_add_permission(request) or
+                        inline.has_change_permission(request, obj) or
+                        inline.has_delete_permission(request, obj)):
+                    continue
+                if not inline.has_add_permission(request):
+                    inline.max_num = 0
+            """
         return named_children
 
     def get_related_controller(self, model):

@@ -21,10 +21,16 @@ class SingleObjectMixin(object):
 
         obj = None
         if object_id:
+            # TODO: lean on configurable pk/slug_field
+            # TODO: add a build-time error if controller patterns yield slug
+            # uniqueness constraints that differ from model contraints.
+            # i.e. post has a slug, post is subordinated to blog and to user,
+            # e.g. /tom/blogs/food/posts/apples and /tom/posts/apples 
+            # ergo post must have (owner, slug) and (blog, slug)
             # TODO come back and implement from_field
             field = (
-                model._meta.pk 
-                if object_id.isdigit() 
+                model._meta.pk
+                if object_id.isdigit()
                 else model._meta.get_field(self.slug_field)
             )
             try:

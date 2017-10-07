@@ -7,13 +7,14 @@ import copy
 
 from django.db.models.deletion import CASCADE
 from django.forms import widgets
+from django.forms.utils import flatatt
 from django.forms.widgets import *
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
 from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.html import format_html
+from django.utils.html import format_html, smart_urlquote
 from django.utils.safestring import mark_safe
 from django.utils.text import Truncator
 from django.utils.translation import ugettext as _
@@ -53,6 +54,57 @@ class FilteredSelectMultiple(SelectMultiple):
         attrs['data-is-stacked'] = int(self.is_stacked)
         output = super(FilteredSelectMultiple, self).render(name, value, attrs)
         return mark_safe(output)
+
+
+class DateInput(DateInput):
+    @property
+    def media(self):
+        js = ["calendar.js", "admin/DateTimeShortcuts.js"]
+        return Media(js=["admin/js/%s" % path for path in js])
+
+    def __init__(self, attrs=None, format=None):
+        final_attrs = {'class': 'vDateField', 'size': '10'}
+        if attrs is not None:
+            final_attrs.update(attrs)
+        super(DateInput, self).__init__(attrs=final_attrs, format=format)
+
+
+class TimeInput(TimeInput):
+    @property
+    def media(self):
+        js = ["calendar.js", "admin/DateTimeShortcuts.js"]
+        return Media(js=["admin/js/%s" % path for path in js])
+
+    def __init__(self, attrs=None, format=None):
+        final_attrs = {'class': 'vTimeField', 'size': '8'}
+        if attrs is not None:
+            final_attrs.update(attrs)
+        super(TimeInput, self).__init__(attrs=final_attrs, format=format)
+
+
+class SplitDateTimeWidget(SplitDateTimeWidget):
+    """
+    A SplitDateTime Widget that has some admin-specific styling.
+    """
+    def __init__(self, attrs=None):
+        widgets = [DateInput, TimeInput]
+        # Note that we're calling MultiWidget, not SplitDateTimeWidget, because
+        # we want to define widgets.
+        MultiWidget.__init__(self, widgets, attrs)
+
+    def format_output(self, rendered_widgets):
+        return format_html('<p class="datetime">{} {}<br />{} {}</p>',
+                           _('Date:'), rendered_widgets[0],
+                           _('Time:'), rendered_widgets[1])
+
+
+class ClearableFileInput(ClearableFileInput):
+    template_with_initial = (
+        '<p class="file-upload">%s</p>' % ClearableFileInput.template_with_initial
+    )
+    template_with_clear = (
+        '<span class="clearable-file-input">%s</span>' % ClearableFileInput.template_with_clear
+    )
 
 
 def url_params_from_lookup_dict(lookups):
@@ -290,3 +342,18 @@ class RelatedFieldWidgetWrapper(Widget):
 
     def id_for_label(self, id_):
         return self.widget.id_for_label(id_)
+
+
+class URLInput(URLInput):
+
+    def render(self, name, value, attrs=None):
+        html = super(URLInput, self).render(name, value, attrs)
+        if value:
+            value = force_text(self.format_value(value))
+            final_attrs = {'href': smart_urlquote(value)}
+            html = format_html(
+                '<p class="url">{} <a{}>{}</a><br />{} {}</p>',
+                _('Currently:'), flatatt(final_attrs), value,
+                _('Change:'), html
+            )
+        return html

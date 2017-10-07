@@ -112,6 +112,17 @@ class ModelPermissionsMixin(AppPermissionsMixin):
                 view_permissions.append(mode)
                 continue
 
+                # resolve which model to look at for permissions
+                #opts = self.get_permissions_model()._meta
+
+                # get the permission codename given the resolved model
+                #codename = get_full_permission_codename(mode, opts)
+
+                # raise AttributeError if permission does not exist
+                #from django.contrib.auth.models import Permission
+                #if not Permission.objects.get_by_natural_key(codename, opts.app_label, opts.model):
+                #    raise AttributeError('Permission "{}" does not exist.'.format(codename))
+
             # attempt to get a user permission the normal way
             codename = self.get_url_name(mode)
             if self.user.has_perm(codename):

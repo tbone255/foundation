@@ -62,12 +62,63 @@ class ViewOptions(PartialViewOptions):
 
     preserve_filters = True
 
+    # unmerged options
+    list_display = ('__str__',)
+    list_display_links = ()
+    list_select_related = False
+    list_editable = ()
+    date_hierarchy = None
+
+    # Custom templates (designed to be over-ridden in subclasses)
+    add_form_template = None
+    change_form_template = None
+    change_list_template = None
+    delete_confirmation_template = None
+    delete_selected_confirmation_template = None
+    object_history_template = None
+    popup_response_template = None
+
+
 class ControllerOptions(ViewOptions):
     """ Configurable options for registered controllers. """
 
     checks_class = None
     registrar = None
     public_modes = ()
+
+
+    """
+    list_display = ('__unicode__',)
+    list_display_links = ()
+    list_select_related = False
+    list_editable = ()
+
+
+    def update(self, attrs):
+        for key in dir(self):
+            if not key.startswith('_'):
+                setattr(self, key, attrs.pop(key, getattr(self, key)))
+
+    def __init__(self, attrs):
+        super(ControllerOptions, self).__init__()
+        self.update(attrs)
+
+    def __getattribute__(self, name):
+        '''
+        When an attribute is not found, attempt to pass-through to the Model
+        Meta (Options).
+        '''
+
+        super_getattr = super(ControllerOptions, self).__getattribute__
+        model = super_getattr('model')
+        try:
+            return super_getattr(name)
+        except AttributeError as e:
+            try:
+                return getattr(model._meta, name)
+            except AttributeError:
+                raise e
+    """
 
 
 class Controller(ControllerOptions, Router, BaseController):
@@ -161,3 +212,13 @@ class Controller(ControllerOptions, Router, BaseController):
 
     def get_index_url(self):
         return self.get_url('index')
+
+    def get_url_from_object(self, mode, obj=None, route=None, **kwargs):
+        """
+        TODO: This is a placeholder for a means of a fully deriving a URL from a
+        non-View Controller given an obj.  This is potentially very expensive,
+        having to follow an undefined number of FKs, and would be compelled to
+        fail if there were any "unanswerables" (e.g. many-to-one) relationships
+        in the chain.
+        """
+        raise NotImplementedError

@@ -34,6 +34,9 @@ class FormOptions(backend.controllers.PartialViewOptions):
     object_style = 'stacked'
     inline_style = 'tabular'
 
+    # m2m render options
+    m2m_filter_horizontal = ()
+    m2m_filter_vertical = ()
 
 class PageController(FormOptions, backend.Controller):
     """
@@ -61,6 +64,9 @@ class EmbedController(PageController):
 
 
 class FormInline(FormOptions, FormChild):
+
+    can_delete = True
+    show_change_link = False
 
     @cached_property
     def parent_model(self):

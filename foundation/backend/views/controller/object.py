@@ -24,6 +24,8 @@ class ObjectMixin(SingleObjectMixin, ControllerViewMixin):
 
         obj = super(ObjectMixin, self).get_object(queryset=queryset)
 
+        # TODO: Consider if we want to support normal pk/slug stuff...
+
         if not obj:
             raise Http404(_("No %(verbose_name)s found matching the query") %
                           {'verbose_name': self.model._meta.verbose_name})

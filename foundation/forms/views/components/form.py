@@ -23,6 +23,23 @@ HORIZONTAL, VERTICAL = 1, 2
 
 FORMFIELD_FOR_DBFIELD_DEFAULTS = {
 }
+"""
+    models.DateTimeField: {
+        'form_class': forms.SplitDateTimeField,
+        'widget': forms.SplitDateTimeWidget
+    },
+    models.DateField: {'widget': forms.DateInput},
+    models.TimeField: {'widget': forms.TimeInput},
+    models.TextField: {'widget': forms.Textarea},
+    models.URLField: {'widget': forms.URLInput},
+    models.IntegerField: {'widget': forms.IntegerFieldWidget},
+    models.BigIntegerField: {'widget': forms.BigIntegerFieldWidget},
+    models.CharField: {'widget': forms.TextInput},
+    models.ImageField: {'widget': forms.ClearableFileInput},
+    models.FileField: {'widget': forms.ClearableFileInput},
+    models.EmailField: {'widget': forms.EmailInput},
+}
+"""
 
 def get_ul_class(radio_style):
     return 'radiolist' if radio_style == VERTICAL else 'radiolist inline'
@@ -63,6 +80,12 @@ class BaseModelFormMixin(object):
         NOTE: There is a feedback loop with get_form here where when fields are
         missing on the controller it will go back to get_form with fields=None
         """
+        # TODO: consider request field whitelist (e.g. user-controlled)
+        # TODO: consider view field whitelist
+        # TODO: consider controller mode fields (with fallback)
+        # TODO: for list mode, consider formset fallback?
+        # TODO: for all modes, consider form fallback
+        # TODO: rinse-wash-repeat for exclude
 
         # fields can be a mode:whitelist dictionary
         if isinstance(self.fields, dict):
@@ -74,6 +97,14 @@ class BaseModelFormMixin(object):
                     fields = self.fields.get('public')
         else:
             fields = self.controller.fields
+
+        # NOTE: This gets called as a helper to get_form_class_kwargs. Recurring
+        # here is avoided by ensuring fields=None is passed to that method.
+        # TODO: remove
+        # if fields is None:
+        #     form = self.get_formset_class(view, obj, fields=None).form
+        #     fields = list(form.base_fields) + \
+        #         list(self.get_readonly_fields(view, obj))
 
         return fields
 
@@ -389,3 +420,14 @@ class BaseModelFormMixin(object):
             for inline_formset_errors in inline_formset.errors:
                 errors.extend(inline_formset_errors.values())
         return errors
+
+    '''
+    def get_empty_value_display(self):
+        """
+        Return the empty_value_display set on ModelAdmin or AdminSite.
+        """
+        try:
+            return mark_safe(self.empty_value_display)
+        except AttributeError:
+            return mark_safe(self.admin_site.empty_value_display)
+    '''
