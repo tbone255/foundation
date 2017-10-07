@@ -1,4 +1,6 @@
 ALL_VAR = 'all'
+ORDER_VAR = 'o'
+ORDER_TYPE_VAR = 'ot'
 PAGE_VAR = 'p'
 SEARCH_VAR = 'q'
 
@@ -7,5 +9,5 @@ SAVE_ADD_ANOTHER_VAR = '_saveaddanother'
 SAVE_AS_NEW_VAR = '_saveasnew'
 
 IGNORED_PARAMS = (
-    ALL_VAR, SEARCH_VAR,
+    ALL_VAR, ORDER_VAR, ORDER_TYPE_VAR, SEARCH_VAR, IS_POPUP_VAR, TO_FIELD_VAR
 )
