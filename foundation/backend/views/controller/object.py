@@ -28,3 +28,30 @@ class ObjectMixin(SingleObjectMixin, ControllerViewMixin):
             raise Http404(_("No %(verbose_name)s found matching the query") %
                           {'verbose_name': self.model._meta.verbose_name})
         return obj
+
+    def add:
+
+        if IS_POPUP_VAR in request.POST:
+            to_field = request.POST.get(TO_FIELD_VAR)
+
+        elif "_continue" in request.POST or (
+                # Redirecting after "Save as new".
+                "_saveasnew" in request.POST and self.save_as_continue and
+                self.has_change_permission(request, obj)
+        ):
+
+        elif "_addanother" in request.POST:
+
+        else:
+
+
+    def edit:
+
+        if "_continue" in request.POST:
+
+        elif "_saveasnew" in request.POST:
+
+        elif "_addanother" in request.POST:
+
+        else:
+

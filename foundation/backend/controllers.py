@@ -47,6 +47,11 @@ class ViewOptions(PartialViewOptions):
     search_fields = ()
     search_by_field = False  # when True, query from field names vs. SEARCH_VAR
 
+    # save options
+    save_as = False
+    save_as_continue = True
+    save_on_top = False
+
 
 class ControllerOptions(ViewOptions):
     """ Configurable options for registered controllers. """

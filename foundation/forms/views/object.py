@@ -110,6 +110,7 @@ class ProcessFormView(BaseModelFormMixin, ObjectMixin, ControllerTemplateMixin,
 
         # from changeform_view
         object_id = None
+        # review
         if hasattr(self.object, 'pk') and '_saveasnew' not in request.POST:
             object_id = self.object.pk
         add = object_id is None
@@ -117,6 +118,8 @@ class ProcessFormView(BaseModelFormMixin, ObjectMixin, ControllerTemplateMixin,
         kwargs.update({
             'form': self.form,
             'object_id': object_id,
+            'save_as': self.save_as,
+            'save_on_top': self.save_on_top,
         })
 
         return super(ProcessFormView, self).get_context_data(**kwargs)
