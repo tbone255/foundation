@@ -41,3 +41,6 @@ class ListView(FormSetMixin, ControllerTemplateMixin, ListMixin, list.ListView):
             'formset': self.formset,
         })
         return super(ListView, self).get_context_data(**kwargs)
+
+    # self.list_filter = list_filter
+    # self.preserved_filters = controller.get_preserved_filters(view)

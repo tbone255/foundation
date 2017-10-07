@@ -60,6 +60,7 @@ class ViewOptions(PartialViewOptions):
     actions_selection_counter = True
     checks_class = ModelAdminChecks
 
+    preserve_filters = True
 
 class ControllerOptions(ViewOptions):
     """ Configurable options for registered controllers. """

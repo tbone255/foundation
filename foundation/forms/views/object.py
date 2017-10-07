@@ -120,6 +120,8 @@ class ProcessFormView(BaseModelFormMixin, ObjectMixin, ControllerTemplateMixin,
             'object_id': object_id,
             'save_as': self.save_as,
             'save_on_top': self.save_on_top,
+            preserved_filters=self.get_preserved_filters(request),
+
         })
 
         return super(ProcessFormView, self).get_context_data(**kwargs)
