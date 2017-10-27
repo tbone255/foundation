@@ -50,9 +50,16 @@ def register(*models, **kwargs):
     backend will be used.
     """
 
+    # odd nuance in decoratoring the class... *args var gets cleaned up before use if empty
+    kwargs['models'] = models
+
     def _controller_class_wrapper(controller_class):
+        models = kwargs.pop('models')
         if not models:
-            raise ValueError('At least one model must be passed to register.')
+            if controller_class.model:
+                models = (controller_class.model, )
+            else:
+                raise ValueError('At least one model must be passed to register.')
 
         site_backend = kwargs.pop('backend', get_backend())
 
