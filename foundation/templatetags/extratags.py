@@ -17,7 +17,7 @@ def resolve_from_context(context, obj=None):
     if obj is None:
         # fallback lookup for object is only used by delete view...
         obj = context['form' if 'form' in context else (
-            'formset' if 'formset' in context else 'object'
+            'formset' if 'formset' in context else 'OBJECT'
         )]
 
     if isinstance(obj, models.BaseInlineFormSet):

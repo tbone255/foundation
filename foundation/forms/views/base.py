@@ -31,7 +31,7 @@ class TitleMixin(object):
             )
             ret += ' {}'.format(self.verbose_name_plural)
         else:
-            obj = getattr(self, 'object', None)
+            obj = getattr(self, 'OBJECT', None)
             return ('{} {}'.format(title(self.view.mode_title), obj)
                 if obj
                 else title('{} {}'.format(self.view.mode_title, self.verbose_name)))

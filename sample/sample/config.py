@@ -12,7 +12,7 @@ class SiteConfig(AppConfig):
 
 class SiteBackend(Backend):
 
-    routes = ('ajax', 'api', 'embed')
+    routes = ('api', 'embed')
     site_index_class = SiteIndexView
     auth_url_prefix = ''
     admin_url_prefix = 'admin'

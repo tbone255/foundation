@@ -24,18 +24,18 @@ class FormViewMixin(object):
         return formfield
 
 
-class APIFormController(forms.FormController):
+class Controller(forms.PageController):
 
     viewsets = {
         None: forms.PageViewSet,
-        'api': rest.APIViewSet,
+        'api': rest.RESTViewSet,
         'embed': forms.EmbedViewSet,
     }
 
     view_mixin_class = FormViewMixin
 
 
-class PostController(APIFormController):
+class PostController(Controller):
 
     # view_class_mixin = ViewMixin
 
@@ -45,7 +45,7 @@ class PostController(APIFormController):
 
 
 @register(models.Blog)
-class BlogController(APIFormController):
+class BlogController(Controller):
 
     # auth
     fk_name = 'owner'

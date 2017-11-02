@@ -12,7 +12,7 @@ __all__ = 'ObjectMixin',
 
 class ObjectMixin(SingleObjectMixin, ControllerViewMixin):
 
-    mode = 'object'
+    mode = 'OBJECT'
 
     def get_object(self, queryset=None):
         """

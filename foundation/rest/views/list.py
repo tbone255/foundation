@@ -3,14 +3,13 @@ from __future__ import unicode_literals
 
 from django.views.generic import list
 
-from .base import ControllerTemplateMixin
-from .components import FormSetMixin
+from .base import RESTControllerMixin
 from ...backend.views import ListMixin
 
 __all__ = 'ListView',
 
 
-class ListView(FormSetMixin, ControllerTemplateMixin, ListMixin, list.ListView):
+class ListView(RESTControllerMixin, ListMixin, list.ListView):
     """ Multiple-Object ModelFormSet View Mixin """
 
     mode_title = 'all'

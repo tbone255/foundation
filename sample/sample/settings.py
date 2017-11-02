@@ -30,11 +30,8 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
-PROJECT_APPS = [
+INSTALLED_APPS = [
     'blogs',
-]
-
-INSTALLED_APPS = PROJECT_APPS + [
     'sample',  # project as app provides static files, base templates
     'foundation',
     'django.contrib.admin',
@@ -44,6 +41,7 @@ INSTALLED_APPS = PROJECT_APPS + [
     'django.contrib.messages',
     'django.contrib.sites',  # needed by foundation
     'django.contrib.staticfiles',
+    'django_extensions',
 ]
 
 SITE_ID = 1  # needed by foundation
