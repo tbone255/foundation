@@ -276,9 +276,9 @@ class BaseModelFormMixin(object):
                 wrapper_kwargs = {}
                 # if related_controller:
                 #     wrapper_kwargs.update(
-                #         can_add_related=related_controller.has_permission('add'),
+                #         can_add_related=related_controller.has_permission('ADD'),
                 #         can_change_related=related_controller.has_permission('change'),
-                #         can_delete_related=related_controller.has_permission('delete'),
+                #         can_delete_related=related_controller.has_permission('DELETE'),
                 #     )
                 formfield.widget = widgets.RelatedFieldWidgetWrapper(
                     formfield.widget, db_field.remote_field, related_controller, **wrapper_kwargs

@@ -92,7 +92,7 @@ class ModelPermissionsMixin(AppPermissionsMixin):
             public_modes = permissions_controller.public_modes
         # default to only public, list view when an inline (no controller)
         else:
-            public_modes = modes = ('list')
+            public_modes = modes = ('LIST')
 
         # process each mode
         view_permissions = []

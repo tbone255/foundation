@@ -23,7 +23,7 @@ class TitleMixin(object):
     """
 
     def get_title(self):
-        if self.mode == 'list':
+        if self.mode == 'LIST':
             ret = (
                 str(self.view_parent.get_object())
                 if self.view_parent
@@ -40,7 +40,7 @@ class TitleMixin(object):
 
 class FormChild(TitleMixin, FormSetMixin, views.ViewChild):
 
-    mode = 'list'
+    mode = 'LIST'
 
     @property
     def inline_template(self):
@@ -59,9 +59,9 @@ class BreadcrumbMixin(TitleMixin):
 
     def get_label(self, mode):
         return '{}'.format(self.verbose_name_plural
-                           if mode == 'list'
+                           if mode == 'LIST'
                            else (self.verbose_name
-                                 if mode == 'add'
+                                 if mode == 'ADD'
                                  else self.get_object()))
 
     def get_breadcrumb(self, mode):
@@ -103,15 +103,15 @@ class ControllerTemplateMixin(BreadcrumbMixin, views.ControllerViewMixin, views.
 
         parent_crumbs = []
         for view_parent in self.view_parents:
-            parent_crumbs.append(view_parent.get_breadcrumb('display'))
+            parent_crumbs.append(view_parent.get_breadcrumb('DISPLAY'))
             if view_parent.controller.is_local_root:
-                parent_crumbs.append(view_parent.get_breadcrumb('list'))
+                parent_crumbs.append(view_parent.get_breadcrumb('LIST'))
                 break
         breadcrumbs.extend(reversed(parent_crumbs))
 
         # always add the current view's list if we are not in list mode
-        if self.mode != 'list':
-            breadcrumbs.append(self.get_breadcrumb('list'))
+        if self.mode != 'LIST':
+            breadcrumbs.append(self.get_breadcrumb('LIST'))
 
         breadcrumbs.append((self.get_title(), self.request.path))
 
@@ -132,7 +132,7 @@ class ControllerTemplateMixin(BreadcrumbMixin, views.ControllerViewMixin, views.
     def form_template(self):
         return os.path.join(
             self.template_paths[self.list_style
-                                if self.mode=='list'
+                                if self.mode=='LIST'
                                 else self.object_style],
             self.template_name
         )

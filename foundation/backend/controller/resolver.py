@@ -79,7 +79,7 @@ class ModelResolver(object):
             if not self.controller.is_local_root:
                 raise NotImplementedError(
                     'Index URL for sub-controllers cannot be determined.')
-            mode = 'list'
+            mode = 'LIST'
 
         has_mode = self.controller.has_mode(mode, route=route)
         return ':'.join((namespace, mode)) if has_mode else None

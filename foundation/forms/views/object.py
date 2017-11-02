@@ -21,13 +21,13 @@ __all__ = 'AddView', 'EditView', 'DisplayView', 'DeleteView'
 class ObjectMixin(views.ObjectMixin):
 
     def get_success_url(self):
-        return self.get_url('list')
+        return self.get_url('LIST')
 
 
 class DeleteView(ObjectMixin, ControllerTemplateMixin, edit.BaseDeleteView):
 
-    mode = 'delete'
-    mode_title = 'delete'
+    mode = 'DELETE'
+    mode_title = 'DELETE'
 
     def get_context_data(self, **kwargs):
         object_name = force_text(self.object._meta.verbose_name)
@@ -124,17 +124,17 @@ class ProcessFormView(BaseModelFormMixin, ObjectMixin, ControllerTemplateMixin,
 
 class AddView(ProcessFormView):
 
-    mode = 'add'
+    mode = 'ADD'
     mode_title = 'add a'
 
 
 class EditView(ProcessFormView):
 
-    mode = 'edit'
+    mode = 'EDIT'
     mode_title = 'Editing'
 
 
 class DisplayView(ProcessFormView):
 
-    mode = 'display'
+    mode = 'DISPLAY'
     mode_title = ''

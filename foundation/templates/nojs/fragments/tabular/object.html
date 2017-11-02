@@ -14,7 +14,7 @@
     {% endfor %}
     {% endspaceless %}
   </td>
-  <td>{% block object-link %}{% if formset_form.original and not formset_form.view_controller.edit %}<a href="{% mode_url 'display' formset_form %}">{{ formset_form.original }}</a>{% endif %}{% endblock %}</td>
+  <td>{% block object-link %}{% if formset_form.original and not formset_form.view_controller.edit %}<a href="{% mode_url 'DISPLAY' formset_form %}">{{ formset_form.original }}</a>{% endif %}{% endblock %}</td>
   {% endblock %}
 
   {% block columns %}
@@ -31,11 +31,11 @@
 
   <td class="{% block column-actions-classes %}text-right{% endblock %}">
   {% block column-actions %}
-    {% ifpermission 'edit' formset_form %}
-      <a href="{% mode_url 'edit' formset_form %}">Edit</a>&nbsp;
+    {% ifpermission 'EDIT' formset_form %}
+      <a href="{% mode_url 'EDIT' formset_form %}">Edit</a>&nbsp;
     {% endifpermission %}
-    {% ifpermission 'delete' formset_form %}
-      <a href="{% mode_url 'delete' formset_form %}">Delete</a>
+    {% ifpermission 'DELETE' formset_form %}
+      <a href="{% mode_url 'DELETE' formset_form %}">Delete</a>
     {% endifpermission %}
   {% endblock %}
   </td>

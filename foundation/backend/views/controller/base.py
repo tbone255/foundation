@@ -133,8 +133,8 @@ class ControllerViewMixin(BaseViewController):
         """
 
         # helpers used throughout
-        self.add = self.mode == 'add' or '_saveasnew' in request.POST
-        self.edit = self.mode in ('add', 'edit')
+        self.add = self.mode == 'ADD' or '_saveasnew' in request.POST
+        self.edit = self.mode in ('ADD', 'EDIT')
         self.params = dict(request.GET.items())
 
         if not self.has_permission(self.name):

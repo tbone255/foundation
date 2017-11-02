@@ -14,9 +14,9 @@
     {% block object-actions %}
     <span>
       {% if not view.edit %}
-        {% ifpermission 'edit' %}&nbsp;<a href="{% mode_url 'edit' %}">{% trans 'Edit' %}</a>{% endifpermission %}
+        {% ifpermission 'EDIT' %}&nbsp;<a href="{% mode_url 'EDIT' %}">{% trans 'EDIT' %}</a>{% endifpermission %}
       {% endif %}
-      {% ifpermission 'delete' %}&nbsp;<a href="{% mode_url 'delete' %}">{% trans 'Delete' %}</a>{% endifpermission %}
+      {% ifpermission 'DELETE' %}&nbsp;<a href="{% mode_url 'DELETE' %}">{% trans 'DELETE' %}</a>{% endifpermission %}
     </span>
     {% endblock %}
     {% block form-title %}

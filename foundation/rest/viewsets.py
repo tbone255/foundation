@@ -12,7 +12,7 @@ __all__ = 'APIViewSet',
 class APIViewSet(ControllerViewSet):
 
     named_view_classes = (
-        ('list', views.ControllerAPIView),
+        ('LIST', views.ControllerAPIView),
         ('object', views.ControllerAPIView),
     )
 
@@ -21,8 +21,8 @@ class APIViewSet(ControllerViewSet):
         urlpatterns = []
 
         # reserved modes list, add, and display need special treatment
-        if 'list' in self:
-            urlpatterns.append(url(r'^$', self['list'], name='list'))
+        if 'LIST' in self:
+            urlpatterns.append(url(r'^$', self['LIST'], name='LIST'))
         if 'object' in self:
             urlpatterns.append(url(
                 r'^(?P<{lookup}>[-\w]+)$'.format(lookup=model_lookup),

@@ -240,7 +240,7 @@ class RelatedFieldWidgetWrapper(Widget):
         return self.widget.media
 
     def get_related_url(self, info, action, *args):
-        mode = action if action != 'change' else 'edit'
+        mode = action if action != 'change' else 'EDIT'
         return (self.view_controller
                 if self.view_controller
                 else self.controller).get_url(mode=mode)
@@ -267,13 +267,13 @@ class RelatedFieldWidgetWrapper(Widget):
                 change_related_template_url=change_related_template_url,
             )
         if self.can_add_related:
-            add_related_url = self.get_related_url(info, 'add')
+            add_related_url = self.get_related_url(info, 'ADD')
             context.update(
                 can_add_related=True,
                 add_related_url=add_related_url,
             )
         if self.can_delete_related:
-            delete_related_template_url = self.get_related_url(info, 'delete', '__fk__')
+            delete_related_template_url = self.get_related_url(info, 'DELETE', '__fk__')
             context.update(
                 can_delete_related=True,
                 delete_related_template_url=delete_related_template_url,

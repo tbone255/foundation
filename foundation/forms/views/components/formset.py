@@ -43,7 +43,7 @@ class FormSetMixin(BaseModelFormMixin):
         # as it stands, can_delete is a concept only for inline controllers
         # we expect the non-inline formsets to get checkboxes for actions etc.
         extra = self.view.edit and self.get_extra(self, **kwargs) or 0
-        can_delete = self.view.mode == 'edit' and self.has_permission('delete')
+        can_delete = self.view.mode == 'EDIT' and self.has_permission('DELETE')
 
         defaults = dict(
             form=FormsetForm,

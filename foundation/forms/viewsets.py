@@ -15,14 +15,14 @@ class BaseFormViewSet(ControllerViewSet):
     view_parent_class = views.base.FormParent
 
     named_view_classes = (
-        ('list', views.ListView),
-        ('add', views.AddView),
-        ('edit', views.EditView),
-        ('delete', views.DeleteView),
-        ('display', views.DisplayView),
+        ('LIST', views.ListView),
+        ('ADD', views.AddView),
+        ('EDIT', views.EditView),
+        ('DELETE', views.DeleteView),
+        ('DISPLAY', views.DisplayView),
     )
 
-    list_names = ('list', 'add')
+    list_names = ('LIST', 'ADD')
 
     def get_urlpatterns(self):
         model_lookup = self.router.controller.model_lookup
@@ -33,13 +33,13 @@ class BaseFormViewSet(ControllerViewSet):
             if name in self:
                 mode = self[name].view_class.mode
                 urlpatterns.append(url(
-                    r'^{}$'.format('' if mode == 'list' else name),
+                    r'^{}$'.format('' if mode == 'LIST' else name),
                     self[name],
                     name=name,
                 ))
 
         # attach all single-object manipulation modes
-        for mode in set(self) - set(('display',) + self.list_names):
+        for mode in set(self) - set(('DISPLAY',) + self.list_names):
             urlpatterns.append(url(
                 r'^(?P<{lookup}>[-\w]+)/{mode}$'.format(
                     lookup=model_lookup,
@@ -50,11 +50,11 @@ class BaseFormViewSet(ControllerViewSet):
             ))
 
         # defer the display view until after "add" so it is not mistaken as slug
-        if 'display' in self:
+        if 'DISPLAY' in self:
             urlpatterns.append(url(
                 r'^(?P<{lookup}>[-\w]+)$'.format(lookup=model_lookup),
-                self['display'],
-                name='display',
+                self['DISPLAY'],
+                name='DISPLAY',
             ))
 
         return urlpatterns

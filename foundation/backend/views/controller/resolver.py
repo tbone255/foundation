@@ -19,7 +19,7 @@ class ChainingMixin(ModelResolver):
         kwargs.update(**self.kwargs)
         kwargs = super(ChainingMixin, self).get_url_kwargs(mode, **kwargs)
 
-        if mode in ('list', 'add'):
+        if mode in ('LIST', 'ADD'):
             kwargs.pop(self.model_lookup, None)
 
         return kwargs

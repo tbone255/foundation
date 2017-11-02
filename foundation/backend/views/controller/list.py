@@ -13,7 +13,7 @@ __all__ = 'ListMixin',
 class ListMixin(PaginationMixin, SearchMixin, MultipleObjectMixin,
                 ControllerViewMixin):
 
-    mode = 'list'
+    mode = 'LIST'
 
     def handle_common(self, handler, request, *args, **kwargs):
 

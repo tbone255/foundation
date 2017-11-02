@@ -40,7 +40,7 @@ class PostController(APIFormController):
     # view_class_mixin = ViewMixin
 
     model = models.Post
-    public_modes = ('list', 'display')
+    public_modes = ('LIST', 'DISPLAY')
     fields = ('blog', 'title', 'body')
 
 
@@ -49,7 +49,7 @@ class BlogController(APIFormController):
 
     # auth
     fk_name = 'owner'
-    public_modes = ('list', 'display')
+    public_modes = ('LIST', 'DISPLAY')
 
     fieldsets = {
         'public': (
