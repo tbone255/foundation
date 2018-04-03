@@ -12,8 +12,8 @@ from django.utils import six
 from django.utils.functional import cached_property
 
 from .. import utils
-from .registry import NotRegistered
-from .router import Router
+from .registry import NotRegistered, Registry
+from foundation.backend.routers import PageRouter
 from .views import TemplateView
 
 __all__ = 'Backend', 'backends', 'get_backend'
@@ -21,13 +21,13 @@ __all__ = 'Backend', 'backends', 'get_backend'
 logger = logging.getLogger(__name__)
 
 
-class Backend(six.with_metaclass(MediaDefiningClass, Router)):
+class Backend(six.with_metaclass(MediaDefiningClass, Registry)):
 
     admin_site = None  # allows for alternate admin site to be provided
     admin_url_prefix = None  # '' to put on root, 'admin' to emulate normal
     auth_url_prefix = None  # '' to put on root, 'accounts' to emulate normal
     create_permissions = False
-    routes = ()
+    routers = ()  # tuple of name-router_class tuples
     site_index_class = TemplateView
     site_index_name = 'index'
     _empty_value_display = '-'
@@ -52,6 +52,13 @@ class Backend(six.with_metaclass(MediaDefiningClass, Router)):
         self._global_actions = self._actions.copy()
         '''
         self.backend = self
+        self.named_routers = {}
+        for name, router_class in self.routers:
+            if name in self.named_routers:
+                raise KeyError('APIRouter named "{}" already exists.'.foramt(name))
+            self.named_routers[name] = router_class()
+        if None not in self.named_routers:
+            self.named_routers[None] = PageRouter()
         super(Backend, self).__init__(*args, **kwargs)
 
     def register(self, model_or_iterable, controller_class=None, **options):
@@ -77,166 +84,58 @@ class Backend(six.with_metaclass(MediaDefiningClass, Router)):
         for model in model_or_iterable:
             super(Backend, self).register(controller_class, model, **options)
 
-    @cached_property
-    def _routes(self):
-        return set(self.routes) | set((None,))
-
-    def get_app_urlpatterns(self, app_config):
-
-        # set backend on app_config since may be using django appconfigs and the
-        # kwargs build-out for AppViewSets will look to AppConfig for backend
-        app_config.backend = self
-        urlpatterns = super(Backend, self).get_urlpatterns(
-            source=app_config, app_config=app_config)
-
-        # start by getting all controller urlpatterns in-depth
-        for model in app_config.get_models():
-            try:
-                controller = self.get_registered_controller(model)
-            except NotRegistered:
-                continue
-
-            # if any controllers have public modes, app is public
-            if controller.public_modes:
-                app_config.has_public_views = True
-
-            controller_namespace = controller.model_namespace
-            controller_prefix = controller.url_prefix
-
-            # get named patterns from controller and extend
-            controller_urlpatterns = controller.get_urlpatterns()
-            for name, patterns in controller_urlpatterns.items():
-                urlpatterns[name].append(
-                    url((r'^{prefix}'.format(prefix=controller_prefix)
-                         if controller_prefix
-                         else ''),
-                        include((patterns, controller_namespace))
-                    ),
-                )
-
-        # set app_index_class on app to "None" to skip creation
-        app_index_class = getattr(app_config, 'app_index_class', None)
-        if app_index_class:
-            template_name = getattr(app_index_class, 'template_name', 'app_index.html')
-            app_index = app_index_class.as_view(
-                app_config=app_config, backend=self, template_name=template_name
-            )
-            urlpatterns[None].append(url(r'^$', app_index, name='index'))
-
-        return urlpatterns
-
-    def get_urlpatterns(self, urlpatterns=None):
-        """
-        May be linked to ROOT_URLCONF directly or used to extend URLs from an
-        existing urls.py file.
-        """
-
-        # gets the set of named urlpatterns from this controller's viewsets
-        urlpatterns = super(Backend, self).get_urlpatterns(self)
+    def _populate_routers(self):
 
         # URL auto-loader traverses all project apps
         for app_config in utils.get_project_app_configs():
-
-            # presume app configs are private
-            app_config.has_public_views = False
 
             app_namespace = getattr(app_config,
                                     'url_namespace',
                                     app_config.label)
 
             urlprefix = getattr(app_config, 'url_prefix', None)
-            urlprefix = (r'^{}/'.format(urlprefix or app_config.label)
+            urlprefix = ((urlprefix or app_config.label)
                          if urlprefix != ''
                          else r'')
-            app_urlpatterns = self.get_app_urlpatterns(app_config)
 
-            # import the app's url patterns (if present)
-            import_urls = getattr(app_config, 'import_urls', False)
-            if import_urls:
+            # set backend on app_config since may be using django appconfigs and the
+            # kwargs build-out for AppViewSets will look to AppConfig for backend
+            app_config.backend = self
+
+            # start by getting all controller urlpatterns in-depth
+            for model in app_config.get_models():
                 try:
-                    app_urlpatterns[None].append(
-                        url(r'', include(r'{}.urls'.format(app_config.name)))
-                    )
-                except ImportError:
-                    pass
+                    controller = self.get_registered_controller(model)
+                except NotRegistered:
+                    continue
 
-            for name, patterns in app_urlpatterns.items():
-                urlpatterns[name].append(
-                    url(urlprefix, include(
-                        (patterns, app_namespace)))
-                )
+                controller_namespace = controller.model_namespace
+                controller_prefix = controller.url_prefix
 
-        # add a site index if one was provided
-        if self.site_index_class:
-            urlpatterns[None].append(
-                url(r'^$',
-                    self.site_index_class.as_view(
-                        backend=self,
-                        name=self.site_index_name,
-                    ),
-                    name='home')
-            )
+                # be nice and getattr to accommodate Django app_configs
+                view_kwargs = dict(router=controller, app_config=app_config)
+                for router_name, viewset in getattr(controller, 'viewsets', {}).items():
+                    prefix = controller_prefix or urlprefix
+                    viewset.controller = controller
+                    viewset.queryset = controller.model.objects.all()
+                    # viewset.queryset = controller.get_root_queryset()
+                    print(router_name, viewset)
+                    self.named_routers[router_name].register(prefix, viewset, base_name=None)
 
-        # flatten urlpatterns
-        for key in urlpatterns:
-            if key is not None:
-                urlpatterns[None].append(
-                    url(r'^{}/'.format(key),
-                        include((urlpatterns[key], key))),
-                )
-        urlpatterns = urlpatterns.pop(None, [])
-
-        if self.admin_url_prefix is not None:
-            from django.contrib.admin import site, autodiscover_modules
-            if self.admin_site is None:
-                self.admin_site = site
-            autodiscover_modules(site=self.admin_site)
-            def context_wrapper(func):
-                def each_context(request):
-                    kwargs = func(request)
-                    kwargs.update(self.each_context(request))
-                    return kwargs
-                return each_context
-            self.admin_site.each_context = context_wrapper(self.admin_site.each_context)
-            urlpatterns += [
-                url(r'^{}/'.format(self.admin_url_prefix)
-                    if self.admin_url_prefix
-                    else r'', self.admin_site.urls)
-            ]
-
-        if self.auth_url_prefix is not None:
-            from django.contrib.auth import urls as auth_urls
-            from .views.auth import ToggleSuperuser
-            from functools import partial
-            from .decorators import backend_context
-
-            auth_urlpatterns = []
-            for auth_urlpattern in auth_urls.urlpatterns:
-                if auth_urlpattern.name == 'password_reset':
-                    auth_urlpattern.callback = partial(
-                        auth_urlpattern.callback,
-                        email_template_name='registration/password_reset_email.txt',
-                        html_email_template_name='registration/password_reset_email.html',
-                    )
-                auth_urlpattern.callback = backend_context(auth_urlpattern.callback, backend=self)
-                auth_urlpatterns.append(auth_urlpattern)
-            auth_urlpatterns.append(
-                url(r'^toggle_superuser/$', ToggleSuperuser.as_view(), name='toggle_superuser'),
-            )
-            if self.auth_url_prefix:
-                auth_urlpatterns = [
-                    url(r'^{}/'.format(self.auth_url_prefix), include(auth_urlpatterns)),
-                ]
-            urlpatterns.extend(auth_urlpatterns)
-
-        return urlpatterns
-
-    @property
+    @cached_property
     def urls(self):
         """
-        Shortcut for referencing backend URLs as ROOT_URLCONF
+        Returns a complete list of URLs for this Backend.
+        Can be used as a shortcut for attaching to ROOT_URLCONF
         """
-        return self.get_urlpatterns()
+        # register all viewsets to the appropriate routers
+        self._populate_routers()
+        urlpatterns = self.named_routers[None].urls
+        urlpatterns.extend([
+            url(r'^{}/'.format(router_name), include((router.urls, router_name)))
+            for router_name, router in self.named_routers.items() if router_name != None
+        ])
+        return urlpatterns
 
     def get_available_apps(self, request):
         """

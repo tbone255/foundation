@@ -5,7 +5,7 @@ from django.conf.urls import url, include
 from django.core.paginator import Paginator
 
 from .controller import BaseController
-from .router import Router
+from .registry import Registry
 
 __all__ = 'Controller',
 
@@ -56,7 +56,7 @@ class ControllerOptions(ViewOptions):
     public_modes = ()
 
 
-class Controller(ControllerOptions, Router, BaseController):
+class Controller(ControllerOptions, Registry, BaseController):
     """
     Controllers need the ability to:
     a) generate the URLs needed for the Backend
@@ -104,7 +104,7 @@ class Controller(ControllerOptions, Router, BaseController):
 
     def get_associated_queryset(self):
         queryset = self.model._default_manager.get_queryset()
-        queryset.attach(controller=self)
+        queryset.associate(controller=self)
 
     def get_view_parent(self, view, kwargs):
         view_parent = view.view_parent_class(

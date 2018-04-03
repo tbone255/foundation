@@ -36,6 +36,8 @@ class registry(dict):
 
 class Registry(object):
 
+    backend = None
+
     def __init__(self, *args, **kwargs):
         self._registry = registry()
         super(Registry, self).__init__(*args, **kwargs)

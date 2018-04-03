@@ -1,4 +1,4 @@
-from foundation.backend import Backend, backends
+from foundation.backend import Backend, EmbedRouter, APIRouter, backends
 from django.conf import settings
 from django.utils import timezone
 from django.apps import AppConfig
@@ -12,7 +12,10 @@ class SiteConfig(AppConfig):
 
 class SiteBackend(Backend):
 
-    routes = ('api', 'embed')
+    routers = (
+        ('api', APIRouter),
+        ('embed', EmbedRouter),
+    )
     site_index_class = SiteIndexView
     auth_url_prefix = ''
     admin_url_prefix = 'admin'
