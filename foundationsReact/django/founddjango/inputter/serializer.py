@@ -1,8 +1,13 @@
+from drf import fields
 from rest_framework import serializers
 from inputter.models import Inputter
 
+
 class InputterSerializer(serializers.ModelSerializer):
-	
-	class Meta:
-		model = Inputter
-		fields = ('title', 'exists') 
+
+    password = fields.PasswordField()
+
+    class Meta:
+        model = Inputter
+
+        fields = ('title', 'password', 'exists')

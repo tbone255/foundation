@@ -14,19 +14,25 @@ export default class Generator extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log('ye')
 	}
 
 	createFields(json) {
-		var fields = json.fields
+		var jsonFields = json.actions.POST
+		var fieldKeys = Object.keys(jsonFields)
+		console.log(fieldKeys)
 		var form = []
 
-		for (let i = 0; i < fields.length; i++) {
-			var field = fields[i]
-			if (field.type === 'TextInput') {
+		for (let i = 0; i < fieldKeys.length; i++) {
+			var fieldName = fieldKeys[i]
+			var field = jsonFields[fieldName]
+
+			if (field.type === 'string') {
 				form.push(<input type="text"/>)
 			}
-			else if (field.type === 'CheckboxInput') {
+			else if (field.type === 'password') {
+				form.push(<input type="password"/>)
+			}
+			else if (field.type === 'boolean') {
 				form.push(<input type="checkbox"/>)
 			}
 		}
